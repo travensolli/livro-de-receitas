@@ -1,0 +1,161 @@
+name: Deploy
+
+# Publica em produção a cada push em main (merge de release/* ou hotfix/*).
+# Também roda à mão em Actions > Deploy > Run workflow: escolhendo uma tag (ex.: v0.1.0)
+# em "Use workflow from", publica aquela versão de novo, o que serve de rollback.
+# Secrets e variáveis necessários: docs/deploy.md.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  APP_DIR: /opt/livro-de-receitas
+
+jobs:
+  images:
+    name: Constrói e publica as imagens
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      registry: ${{ steps.meta.outputs.registry }}
+      tag: ${{ steps.meta.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Define o registry e a tag das imagens
+        id: meta
+        run: |
+          echo "registry=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
+          echo "tag=sha-${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v4
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Imagem da API
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.registry }}/livro-de-receitas-api:${{ steps.meta.outputs.tag }}
+          build-args: APP_VERSION=${{ steps.meta.outputs.tag }}
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+      - name: Imagem do Caddy com o front
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: infra/caddy/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.registry }}/livro-de-receitas-web:${{ steps.meta.outputs.tag }}
+          labels: org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+  deploy:
+    name: Publica no Droplet
+    needs: images
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+      SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+      IMAGE_TAG: ${{ needs.images.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Confere os secrets e variáveis
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        run: |
+          missing=0
+          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_SSH_KNOWN_HOSTS POSTGRES_PASSWORD SITE_DOMAIN; do
+            if [[ -z "${!name}" ]]; then
+              echo "::error::${name} não está configurado. Veja docs/deploy.md."
+              missing=1
+            fi
+          done
+          if [[ -n "$POSTGRES_PASSWORD" && ! "$POSTGRES_PASSWORD" =~ ^[A-Za-z0-9]+$ ]]; then
+            echo "::error::POSTGRES_PASSWORD deve ter só letras e números (gere com: openssl rand -hex 32)."
+            missing=1
+          fi
+          exit "$missing"
+
+      - name: Configura o SSH
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host droplet
+            HostName ${DEPLOY_HOST}
+            User ${DEPLOY_USER}
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+          EOF
+
+      - name: Gera o .env de produção
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          IMAGE_REGISTRY: ${{ needs.images.outputs.registry }}
+        run: |
+          umask 077
+          {
+            echo "# Gerado pelo deploy de ${GITHUB_SHA} em $(date -u +%Y-%m-%dT%H:%M:%SZ)."
+            echo "# Não edite: o próximo deploy sobrescreve este arquivo (veja docs/deploy.md)."
+            echo "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}"
+            echo "SITE_DOMAIN=${SITE_DOMAIN}"
+            echo "IMAGE_REGISTRY=${IMAGE_REGISTRY}"
+            echo "IMAGE_TAG=${IMAGE_TAG}"
+          } > production.env
+
+      - name: Envia os arquivos e atualiza os containers
+        run: |
+          # APP_DIR é expandido aqui no runner, de propósito (SC2029).
+          scp docker-compose.yml infra/deploy.sh "droplet:${APP_DIR}/"
+          # shellcheck disable=SC2029
+          ssh droplet "umask 077 && cat > '${APP_DIR}/.env'" < production.env
+          # shellcheck disable=SC2029
+          ssh droplet "bash '${APP_DIR}/deploy.sh'"
+
+      - name: Confere se a nova versão está no ar
+        run: |
+          domain=$(echo "${SITE_DOMAIN%%,*}" | xargs)
+          health=$(curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-all-errors \
+            --max-time 10 "https://${domain}/api/health")
+          echo "$health"
+          version=$(echo "$health" | jq -r .version)
+          if [[ "$version" != "$IMAGE_TAG" ]]; then
+            echo "::error::Esperava a versão ${IMAGE_TAG}, mas o site respondeu ${version}."
+            exit 1
+          fi
+
+      - name: Remove a chave SSH do runner
+        if: always()
+        run: rm -f ~/.ssh/deploy_key production.env
