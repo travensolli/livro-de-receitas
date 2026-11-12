@@ -33,6 +33,8 @@ Cadastre em **Settings → Secrets and variables → Actions**.
 
 O `GITHUB_TOKEN`, que publica as imagens no GHCR, é criado automaticamente pelo Actions.
 
+Enquanto nenhum desses secrets e variáveis estiver cadastrado, o workflow Deploy termina verde sem construir nem publicar nada, com o aviso "Deploy pulado". Assim, merges em `main` antes de o servidor existir não falham. Se só parte deles estiver cadastrada, o workflow falha e lista o que falta.
+
 Para conferir a impressão digital do `ssh-keyscan`: no console web do Droplet, rode `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` e compare com `ssh-keyscan -t ed25519 <IP> | ssh-keygen -lf -` no seu computador. Se o Droplet for recriado, a chave muda e este secret precisa ser atualizado.
 
 ## Preparar o servidor (uma vez)

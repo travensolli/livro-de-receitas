@@ -3,7 +3,8 @@ name: Deploy
 # Publica em produção a cada push em main (merge de release/* ou hotfix/*).
 # Também roda à mão em Actions > Deploy > Run workflow: escolhendo uma tag (ex.: v0.1.0)
 # em "Use workflow from", publica aquela versão de novo, o que serve de rollback.
-# Secrets e variáveis necessários: docs/deploy.md.
+# Secrets e variáveis necessários: docs/deploy.md. Enquanto nenhum deles estiver
+# configurado, o workflow é pulado; se só parte estiver, ele falha listando o que falta.
 on:
   push:
     branches: [main]
@@ -20,8 +21,55 @@ env:
   APP_DIR: /opt/livro-de-receitas
 
 jobs:
+  config:
+    name: Confere a configuração do deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      enabled: ${{ steps.check.outputs.enabled }}
+    steps:
+      - name: Confere os secrets e variáveis
+        id: check
+        env:
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SITE_DOMAIN: ${{ vars.SITE_DOMAIN }}
+        run: |
+          required=(DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_SSH_KNOWN_HOSTS POSTGRES_PASSWORD SITE_DOMAIN)
+          missing=()
+          for name in "${required[@]}"; do
+            [[ -n "${!name}" ]] || missing+=("$name")
+          done
+
+          if (( ${#missing[@]} == ${#required[@]} )); then
+            message="Nenhum secret de deploy configurado: build e publicação pulados. Veja docs/deploy.md."
+            echo "::notice title=Deploy pulado::${message}"
+            echo "### Deploy pulado"$'\n\n'"${message}" >> "$GITHUB_STEP_SUMMARY"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          failed=0
+          for name in "${missing[@]}"; do
+            echo "::error::${name} não está configurado. Veja docs/deploy.md."
+            failed=1
+          done
+          if [[ -n "$POSTGRES_PASSWORD" && ! "$POSTGRES_PASSWORD" =~ ^[A-Za-z0-9]+$ ]]; then
+            echo "::error::POSTGRES_PASSWORD deve ter só letras e números (gere com: openssl rand -hex 32)."
+            failed=1
+          fi
+          if (( failed )); then
+            exit 1
+          fi
+          echo "enabled=true" >> "$GITHUB_OUTPUT"
+
   images:
     name: Constrói e publica as imagens
+    needs: config
+    if: needs.config.outputs.enabled == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:
@@ -82,25 +130,6 @@ jobs:
       IMAGE_TAG: ${{ needs.images.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
-
-      - name: Confere os secrets e variáveis
-        env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_SSH_KNOWN_HOSTS }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        run: |
-          missing=0
-          for name in DEPLOY_HOST DEPLOY_USER DEPLOY_SSH_KEY DEPLOY_SSH_KNOWN_HOSTS POSTGRES_PASSWORD SITE_DOMAIN; do
-            if [[ -z "${!name}" ]]; then
-              echo "::error::${name} não está configurado. Veja docs/deploy.md."
-              missing=1
-            fi
-          done
-          if [[ -n "$POSTGRES_PASSWORD" && ! "$POSTGRES_PASSWORD" =~ ^[A-Za-z0-9]+$ ]]; then
-            echo "::error::POSTGRES_PASSWORD deve ter só letras e números (gere com: openssl rand -hex 32)."
-            missing=1
-          fi
-          exit "$missing"
 
       - name: Configura o SSH
         env:
