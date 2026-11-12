@@ -1,0 +1,26 @@
+# Caddy de produção. Emite e renova sozinho o certificado HTTPS (Let's Encrypt) do domínio
+# em SITE_DOMAIN, redireciona HTTP para HTTPS, encaminha /api/* para a API e serve o front.
+# Para mais de um domínio, separe por vírgula: SITE_DOMAIN="exemplo.com.br, www.exemplo.com.br".
+
+{$SITE_DOMAIN} {
+	encode zstd gzip
+	root * /srv
+
+	handle /api/* {
+		reverse_proxy api:3000
+	}
+
+	# Arquivos gerados pelo Vite têm hash no nome: cache longo, e 404 de verdade se faltarem.
+	handle /assets/* {
+		header Cache-Control "public, max-age=31536000, immutable"
+		file_server
+	}
+
+	# Demais caminhos: SPA. O que não for arquivo cai no index.html, sempre revalidado
+	# para que um deploy novo apareça na próxima visita.
+	handle {
+		header Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+}
