@@ -1,0 +1,95 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, tipos, testes e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: livro
+          POSTGRES_PASSWORD: livro
+          POSTGRES_DB: livro_de_receitas
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U livro -d livro_de_receitas"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Instala as dependências
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint (ESLint e Prettier)
+        run: pnpm lint
+
+      - name: Checagem de tipos
+        run: pnpm typecheck
+
+      - name: Testes
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Aplica as migrações num banco limpo
+        run: pnpm db:migrate
+        env:
+          DATABASE_URL: postgres://livro:livro@localhost:5432/livro_de_receitas
+
+  images:
+    name: Build das imagens Docker
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Imagem da API
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: apps/api/Dockerfile
+          outputs: type=cacheonly
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,scope=api,mode=max
+
+      - name: Imagem do Caddy com o front
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: infra/caddy/Dockerfile
+          load: true
+          tags: livro-de-receitas-web:ci
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,scope=web,mode=max
+
+      - name: Valida o Caddyfile
+        run: >-
+          docker run --rm -e SITE_DOMAIN=exemplo.com.br livro-de-receitas-web:ci
+          caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile

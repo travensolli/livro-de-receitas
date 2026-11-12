@@ -52,3 +52,18 @@ Site público com o acervo de receitas culinárias do Gabriel Travensolli. Visit
 ## Comandos
 
 Atualize esta seção sempre que criar ou mudar scripts do projeto.
+
+Pré-requisitos: Node 26 (`.nvmrc`), pnpm 10 (versão fixada em `packageManager`) e Docker. Todos os comandos rodam na raiz.
+
+- `pnpm install`: instala as dependências do monorepo
+- `cp .env.example .env`: cria a configuração local (uma vez; o mesmo `.env` serve ao banco, à API e ao Vite)
+- `pnpm db:up` / `pnpm db:down`: sobe e para o PostgreSQL de desenvolvimento (`docker-compose.dev.yml`)
+- `pnpm db:migrate`: aplica as migrações pendentes no banco de `DATABASE_URL`
+- `pnpm db:generate`: gera uma migração em `apps/api/drizzle/` a partir de `apps/api/src/db/schema.ts`
+- `pnpm dev`: API (porta `API_PORT`) e front (Vite, encaminhando `/api` para a API) com recarga automática
+- `pnpm lint`: ESLint e checagem do Prettier; `pnpm format` corrige a formatação
+- `pnpm typecheck`: `tsc --noEmit` em todos os pacotes
+- `pnpm test`: Vitest em todos os pacotes
+- `pnpm build`: build de produção da API (`apps/api/dist`) e do front (`apps/web/dist`)
+- `docker build -f apps/api/Dockerfile .` e `docker build -f infra/caddy/Dockerfile .`: imagens de produção (o CI faz isso; o servidor nunca compila)
+- Deploy, secrets, preparação do servidor e rollback: `docs/deploy.md`
