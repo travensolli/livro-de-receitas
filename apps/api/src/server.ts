@@ -1,6 +1,8 @@
 import { buildApp } from './app';
 import { createDatabase } from './db/client';
 import { loadEnv } from './env';
+import { diskPhotoUrl } from './photos/photo-url';
+import { createRecipeRepository } from './recipes/repository';
 
 const env = loadEnv();
 const database = createDatabase(env.DATABASE_URL);
@@ -8,6 +10,8 @@ const database = createDatabase(env.DATABASE_URL);
 const app = buildApp({
   version: env.APP_VERSION,
   checkDatabase: database.ping,
+  recipes: createRecipeRepository(database.db),
+  photoUrl: diskPhotoUrl,
   logger: { level: env.LOG_LEVEL },
 });
 

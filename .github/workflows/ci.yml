@@ -50,16 +50,19 @@ jobs:
       - name: Checagem de tipos
         run: pnpm typecheck
 
-      - name: Testes
-        run: pnpm test
-
-      - name: Build
-        run: pnpm build
-
       - name: Aplica as migrações num banco limpo
         run: pnpm db:migrate
         env:
           DATABASE_URL: postgres://livro:livro@localhost:5432/livro_de_receitas
+
+      # Os testes de integração da API criam um banco temporário próprio no mesmo servidor.
+      - name: Testes
+        run: pnpm test
+        env:
+          DATABASE_URL: postgres://livro:livro@localhost:5432/livro_de_receitas
+
+      - name: Build
+        run: pnpm build
 
   images:
     name: Build das imagens Docker

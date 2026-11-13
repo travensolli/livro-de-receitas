@@ -41,55 +41,55 @@ Os valores abaixo vão em `tokens.css`, como propriedades em `:root`.
 
 ### Cores
 
-| Token | Valor | Nome | Uso |
-| --- | --- | --- | --- |
-| `--color-bg` | `#F7F8F5` | Esmalte | Fundo das páginas |
-| `--color-text` | `#22282B` | Ferro | Texto principal |
-| `--color-text-muted` | `#4E565B` | Grafite | Texto de apoio |
-| `--color-line` | `#C9CCC6` | | Linhas e bordas de campos |
-| `--color-brand` | `#2A7040` | Couve | Cor da casa: links, botão de entrar, números dos passos, faixa das favoritas |
-| `--color-brand-hover` | `#1F5530` | | Hover de links e botões verdes |
-| `--color-on-brand` | `#FFFFFF` | | Texto sobre o verde |
-| `--color-action` | `#F07A2A` | Abóbora | Botão principal, coração das favoritas |
-| `--color-on-action` | `#22282B` | | Texto sobre o laranja (nunca branco) |
-| `--color-accent-text` | `#B4470F` | | Laranja para texto e anotações à mão |
-| `--color-paper` | `#E6CD98` | Papel de pão | Painel de ingredientes |
-| `--color-paper-photo` | `#F3E6C6` | | Fundo de foto ausente dentro do painel |
+| Token                 | Valor     | Nome         | Uso                                                                          |
+| --------------------- | --------- | ------------ | ---------------------------------------------------------------------------- |
+| `--color-bg`          | `#F7F8F5` | Esmalte      | Fundo das páginas                                                            |
+| `--color-text`        | `#22282B` | Ferro        | Texto principal                                                              |
+| `--color-text-muted`  | `#4E565B` | Grafite      | Texto de apoio                                                               |
+| `--color-line`        | `#C9CCC6` |              | Linhas e bordas de campos                                                    |
+| `--color-brand`       | `#2A7040` | Couve        | Cor da casa: links, botão de entrar, números dos passos, faixa das favoritas |
+| `--color-brand-hover` | `#1F5530` |              | Hover de links e botões verdes                                               |
+| `--color-on-brand`    | `#FFFFFF` |              | Texto sobre o verde                                                          |
+| `--color-action`      | `#F07A2A` | Abóbora      | Botão principal, coração das favoritas                                       |
+| `--color-on-action`   | `#22282B` |              | Texto sobre o laranja (nunca branco)                                         |
+| `--color-accent-text` | `#B4470F` |              | Laranja para texto e anotações à mão                                         |
+| `--color-paper`       | `#E6CD98` | Papel de pão | Painel de ingredientes                                                       |
+| `--color-paper-photo` | `#F3E6C6` |              | Fundo de foto ausente dentro do painel                                       |
 
 ### Cores de categoria
 
 Cada categoria tem três tokens: a cor, a cor do ícone sobre ela e um tom claro usado como fundo de foto ausente. A lista de categorias ainda será definida pelo PO; estas quatro são as provisórias do design.
 
-| Categoria | `--color-category-<slug>` | `-on` | `-tint` | Ícone |
-| --- | --- | --- | --- | --- |
-| Bolos e doces (`sweets`) | `#F2B705` milho | `#22282B` | `#FBE7A1` | `category-sweets` |
-| Panela do dia a dia (`pot`) | `#F07A2A` abóbora | `#22282B` | `#FCD8BF` | `category-pot` |
-| Hortaliças (`greens`) | `#6BAA3A` broto | `#22282B` | `#DCEDCB` | `category-greens` |
-| Pães e quitandas (`breads`) | `#A0612B` canela | `#FFFFFF` | `#F1DECB` | `category-breads` |
+| Categoria                   | `--color-category-<slug>` | `-on`     | `-tint`   | Ícone             |
+| --------------------------- | ------------------------- | --------- | --------- | ----------------- |
+| Bolos e doces (`sweets`)    | `#F2B705` milho           | `#22282B` | `#FBE7A1` | `category-sweets` |
+| Panela do dia a dia (`pot`) | `#F07A2A` abóbora         | `#22282B` | `#FCD8BF` | `category-pot`    |
+| Hortaliças (`greens`)       | `#6BAA3A` broto           | `#22282B` | `#DCEDCB` | `category-greens` |
+| Pães e quitandas (`breads`) | `#A0612B` canela          | `#FFFFFF` | `#F1DECB` | `category-breads` |
 
 Uma categoria nova pede só três tokens novos e uma linha em `categories.ts`.
 
 ### Tipografia
 
-| Token | Valor | Uso |
-| --- | --- | --- |
+| Token         | Valor                             | Uso                                                                             |
+| ------------- | --------------------------------- | ------------------------------------------------------------------------------- |
 | `--font-hand` | `"Kalam", "Segoe Print", cursive` | Nome do site, títulos de receitas e seções, dicas na margem, números dos passos |
-| `--font-text` | `"Bitter", Georgia, serif` | Todo o resto |
+| `--font-text` | `"Bitter", Georgia, serif`        | Todo o resto                                                                    |
 
 Kalam é provisória e será trocada pela fonte da letra do Gabriel. Bitter é definitiva.
 
 Escala (base 16 px):
 
-| Token | Valor | Uso |
-| --- | --- | --- |
-| `--text-sm` | `0.9375rem` (15 px) | Legendas, metadados, rodapé |
-| `--text-base` | `1.125rem` (18 px) | Texto corrido, ingredientes |
-| `--text-lg` | `1.3125rem` (21 px) | Destaques de texto |
-| `--text-hand-sm` | `1.5rem` (24 px) | Dicas na margem |
-| `--text-hand-md` | `1.875rem` (30 px) | Título nos cards |
-| `--text-hand-lg` | `clamp(2rem, 4vw, 2.375rem)` | Títulos de seção (Ingredientes, Modo de preparo) |
-| `--text-hand-xl` | `clamp(2.5rem, 6vw, 3.25rem)` | Títulos de página |
-| `--text-hand-2xl` | `clamp(3rem, 7vw, 4.75rem)` | Título da receita e da faixa das favoritas |
+| Token             | Valor                         | Uso                                              |
+| ----------------- | ----------------------------- | ------------------------------------------------ |
+| `--text-sm`       | `0.9375rem` (15 px)           | Legendas, metadados, rodapé                      |
+| `--text-base`     | `1.125rem` (18 px)            | Texto corrido, ingredientes                      |
+| `--text-lg`       | `1.3125rem` (21 px)           | Destaques de texto                               |
+| `--text-hand-sm`  | `1.5rem` (24 px)              | Dicas na margem                                  |
+| `--text-hand-md`  | `1.875rem` (30 px)            | Título nos cards                                 |
+| `--text-hand-lg`  | `clamp(2rem, 4vw, 2.375rem)`  | Títulos de seção (Ingredientes, Modo de preparo) |
+| `--text-hand-xl`  | `clamp(2.5rem, 6vw, 3.25rem)` | Títulos de página                                |
+| `--text-hand-2xl` | `clamp(3rem, 7vw, 4.75rem)`   | Título da receita e da faixa das favoritas       |
 
 Entrelinha: `1.65` no texto corrido em Bitter; `1` a `1.1` nos títulos manuscritos. Linhas de texto com no máximo cerca de 36em.
 
@@ -150,16 +150,16 @@ Nenhum componente muda.
 
 Traço de 1.8, pontas e junções arredondadas, `viewBox="0 0 24 24"`, `fill="none"`, `stroke="currentColor"`.
 
-| Nome | Uso | Desenho (conteúdo do SVG) |
-| --- | --- | --- |
-| `category-sweets` | Bolos e doces | `<path d="M12 21.5V15"/><path d="M12 15C7.6 12.8 7.2 6 12 2.8C16.9 6.1 16.3 12.9 12 15Z"/><path d="M12 15C10.2 12.2 10.1 6.4 12 2.8"/><path d="M12 15C13.9 12.3 13.8 6.3 12 2.8"/>` |
-| `category-pot` | Panela do dia a dia | `<path d="M4.2 10.2h15.6l-.4 6.3a2.8 2.8 0 0 1-2.8 2.6H7.4a2.8 2.8 0 0 1-2.8-2.6z"/><path d="M2 11.4h2.2M19.8 11.4H22"/><path d="M5.8 10c1.6-2.6 10.6-2.8 12.4 0"/><path d="M12 7.2V5.6"/>` |
-| `category-greens` | Hortaliças | `<path d="M5 19.2C4.6 10.6 10.4 4.8 19.4 4.6c.3 8.8-5.6 14.8-14.4 14.6z"/><path d="M5 19.2 14.8 9.4"/>` |
-| `category-breads` | Pães e quitandas | `<path d="M3.8 12.6C3.6 8.4 7.6 5.8 12 5.8s8.6 2.6 8.2 6.8v5.6c0 .7-.5 1.2-1.2 1.2H5c-.7 0-1.2-.5-1.2-1.2z"/><path d="M8.6 9.2l1.4 2.2M12.4 8.6l1.4 2.2M16 9.4l1.2 1.9"/>` |
-| `time` | Tempo de preparo | `<circle cx="12" cy="12" r="8.6"/><path d="M12 7.6v4.8l3.2 2"/>` |
-| `servings` | Rendimento | `<circle cx="12.6" cy="12.5" r="6"/><circle cx="12.6" cy="12.5" r="3.2"/><path d="M2.8 4.5v4.2c0 1 .7 1.6 1.4 1.6M5.6 4.5v4.2c0 1-.7 1.6-1.4 1.6M4.2 10.3v9.2"/><path d="M21.4 4.4c-1.2 1.2-1.6 3.6-1.4 6.2h1.4v9"/>` |
-| `recipes` | Menu: Receitas | `<path d="M3 6.2c3-1.4 6-1.2 9 .8 3-2 6-2.2 9-.8v12.2c-3-1.4-6-1.2-9 .8-3-2-6-2.2-9-.8z"/><path d="M12 7v12.2"/>` |
-| `menus` | Menu: Cardápios | `<path d="M3 17.5h18"/><path d="M4.8 17.2c.4-4.6 3.4-7.6 7.2-7.6s6.8 3 7.2 7.6"/><path d="M12 9.6V7.8M10.8 7.6h2.4"/>` |
-| `favorite` | Favoritas (preenchido) | `<path d="M12 20s-7.6-4.6-8.4-9.6C3 7.2 5 5 7.6 5c1.9 0 3.4 1.2 4.4 2.8C13 6.2 14.5 5 16.4 5 19 5 21 7.2 20.4 10.4 19.6 15.4 12 20 12 20z"/>` |
-| `search` | Busca | `<circle cx="10.8" cy="10.8" r="6.2"/><path d="M15.4 15.4l5 5"/>` |
-| `photo` | Foto ausente | `<path d="M4 8.2h3.2L8.8 6h6.4l1.6 2.2H20v10.6H4z"/><circle cx="12" cy="13.2" r="3.4"/>` |
+| Nome              | Uso                    | Desenho (conteúdo do SVG)                                                                                                                                                                                             |
+| ----------------- | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `category-sweets` | Bolos e doces          | `<path d="M12 21.5V15"/><path d="M12 15C7.6 12.8 7.2 6 12 2.8C16.9 6.1 16.3 12.9 12 15Z"/><path d="M12 15C10.2 12.2 10.1 6.4 12 2.8"/><path d="M12 15C13.9 12.3 13.8 6.3 12 2.8"/>`                                   |
+| `category-pot`    | Panela do dia a dia    | `<path d="M4.2 10.2h15.6l-.4 6.3a2.8 2.8 0 0 1-2.8 2.6H7.4a2.8 2.8 0 0 1-2.8-2.6z"/><path d="M2 11.4h2.2M19.8 11.4H22"/><path d="M5.8 10c1.6-2.6 10.6-2.8 12.4 0"/><path d="M12 7.2V5.6"/>`                           |
+| `category-greens` | Hortaliças             | `<path d="M5 19.2C4.6 10.6 10.4 4.8 19.4 4.6c.3 8.8-5.6 14.8-14.4 14.6z"/><path d="M5 19.2 14.8 9.4"/>`                                                                                                               |
+| `category-breads` | Pães e quitandas       | `<path d="M3.8 12.6C3.6 8.4 7.6 5.8 12 5.8s8.6 2.6 8.2 6.8v5.6c0 .7-.5 1.2-1.2 1.2H5c-.7 0-1.2-.5-1.2-1.2z"/><path d="M8.6 9.2l1.4 2.2M12.4 8.6l1.4 2.2M16 9.4l1.2 1.9"/>`                                            |
+| `time`            | Tempo de preparo       | `<circle cx="12" cy="12" r="8.6"/><path d="M12 7.6v4.8l3.2 2"/>`                                                                                                                                                      |
+| `servings`        | Rendimento             | `<circle cx="12.6" cy="12.5" r="6"/><circle cx="12.6" cy="12.5" r="3.2"/><path d="M2.8 4.5v4.2c0 1 .7 1.6 1.4 1.6M5.6 4.5v4.2c0 1-.7 1.6-1.4 1.6M4.2 10.3v9.2"/><path d="M21.4 4.4c-1.2 1.2-1.6 3.6-1.4 6.2h1.4v9"/>` |
+| `recipes`         | Menu: Receitas         | `<path d="M3 6.2c3-1.4 6-1.2 9 .8 3-2 6-2.2 9-.8v12.2c-3-1.4-6-1.2-9 .8-3-2-6-2.2-9-.8z"/><path d="M12 7v12.2"/>`                                                                                                     |
+| `menus`           | Menu: Cardápios        | `<path d="M3 17.5h18"/><path d="M4.8 17.2c.4-4.6 3.4-7.6 7.2-7.6s6.8 3 7.2 7.6"/><path d="M12 9.6V7.8M10.8 7.6h2.4"/>`                                                                                                |
+| `favorite`        | Favoritas (preenchido) | `<path d="M12 20s-7.6-4.6-8.4-9.6C3 7.2 5 5 7.6 5c1.9 0 3.4 1.2 4.4 2.8C13 6.2 14.5 5 16.4 5 19 5 21 7.2 20.4 10.4 19.6 15.4 12 20 12 20z"/>`                                                                         |
+| `search`          | Busca                  | `<circle cx="10.8" cy="10.8" r="6.2"/><path d="M15.4 15.4l5 5"/>`                                                                                                                                                     |
+| `photo`           | Foto ausente           | `<path d="M4 8.2h3.2L8.8 6h6.4l1.6 2.2H20v10.6H4z"/><circle cx="12" cy="13.2" r="3.4"/>`                                                                                                                              |
