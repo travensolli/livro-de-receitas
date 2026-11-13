@@ -16,7 +16,8 @@
     "db:up": "docker compose -f docker-compose.dev.yml up -d --wait",
     "db:down": "docker compose -f docker-compose.dev.yml down",
     "db:generate": "pnpm --filter @livro/api db:generate",
-    "db:migrate": "pnpm --filter @livro/api db:migrate"
+    "db:migrate": "pnpm --filter @livro/api db:migrate",
+    "db:seed": "pnpm --filter @livro/api db:seed"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
