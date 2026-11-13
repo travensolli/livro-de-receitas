@@ -1,0 +1,27 @@
+.footer {
+  margin-top: var(--space-9);
+  border-top: var(--border-width) solid var(--color-line);
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-5);
+  padding-block: var(--space-6);
+}
+
+.phrase {
+  color: var(--color-accent-text);
+  font-family: var(--font-hand);
+  font-size: var(--text-hand-sm);
+  line-height: var(--leading-hand);
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--touch-target);
+  font-size: var(--text-sm);
+}
