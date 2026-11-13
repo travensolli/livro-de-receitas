@@ -1,0 +1,98 @@
+/*
+ * Todos os valores concretos do design (docs/design.md). Componentes usam só var(--token):
+ * nenhuma cor em hexadecimal, nome de fonte ou tamanho solto fora daqui e de fonts.css.
+ */
+:root {
+  /* Cores */
+  --color-bg: #f7f8f5; /* Esmalte */
+  --color-text: #22282b; /* Ferro */
+  --color-text-muted: #4e565b; /* Grafite */
+  --color-line: #c9ccc6;
+  --color-brand: #2a7040; /* Couve */
+  --color-brand-hover: #1f5530;
+  --color-on-brand: #ffffff;
+  --color-action: #f07a2a; /* Abóbora */
+  --color-on-action: #22282b;
+  --color-accent-text: #b4470f;
+  --color-paper: #e6cd98; /* Papel de pão */
+  --color-paper-photo: #f3e6c6;
+
+  /* Cores de categoria: cor, cor do ícone sobre ela e tom claro para foto ausente */
+  --color-category-sweets: #f2b705; /* milho */
+  --color-category-sweets-on: #22282b;
+  --color-category-sweets-tint: #fbe7a1;
+  --color-category-pot: #f07a2a; /* abóbora */
+  --color-category-pot-on: #22282b;
+  --color-category-pot-tint: #fcd8bf;
+  --color-category-greens: #6baa3a; /* broto */
+  --color-category-greens-on: #22282b;
+  --color-category-greens-tint: #dcedcb;
+  --color-category-breads: #a0612b; /* canela */
+  --color-category-breads-on: #ffffff;
+  --color-category-breads-tint: #f1decb;
+
+  /* Tipografia */
+  --font-hand: 'Kalam', 'Segoe Print', cursive;
+  --font-text: 'Bitter', Georgia, serif;
+
+  --text-sm: 0.9375rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.3125rem;
+  --text-hand-sm: 1.5rem;
+  --text-hand-md: 1.875rem;
+  --text-hand-lg: clamp(2rem, 4vw, 2.375rem);
+  --text-hand-xl: clamp(2.5rem, 6vw, 3.25rem);
+  --text-hand-2xl: clamp(3rem, 7vw, 4.75rem);
+
+  --weight-regular: 400;
+  --weight-bold: 700;
+
+  --leading-text: 1.65;
+  --leading-hand: 1.05;
+  --measure: 36em;
+
+  /* Espaços (múltiplos de 4 px) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 3.5rem;
+  --space-9: 4.5rem;
+
+  /* Raios */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* Linhas */
+  --border-width: 1px;
+  --border-width-strong: 2px;
+
+  /* Layout */
+  --container-max: 1200px;
+  --gutter: 20px;
+  --touch-target: 44px;
+
+  /* Foco visível em tudo que é clicável */
+  --focus-ring-width: 3px;
+  --focus-ring-offset: 2px;
+
+  /* Movimento: só como resposta a uma ação */
+  --duration-fast: 120ms;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gutter: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+  }
+}
