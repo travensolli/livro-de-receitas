@@ -1,0 +1,24 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-1);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-pill);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  transition: border-color var(--duration-fast) ease-out;
+}
+
+.chip:hover {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+.chip[aria-current='page'] {
+  border-color: var(--color-brand);
+  border-width: var(--border-width-strong);
+}

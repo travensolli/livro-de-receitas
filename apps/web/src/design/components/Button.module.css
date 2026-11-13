@@ -1,0 +1,50 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--touch-target);
+  padding: var(--space-2) var(--space-5);
+  border: var(--border-width-strong) solid transparent;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--text-base);
+  font-weight: var(--weight-bold);
+  line-height: 1.2;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast) ease-out,
+    border-color var(--duration-fast) ease-out;
+}
+
+.action {
+  background: var(--color-action);
+  color: var(--color-on-action);
+}
+
+.action:hover {
+  border-color: var(--color-on-action);
+  color: var(--color-on-action);
+}
+
+.brand {
+  background: var(--color-brand);
+  color: var(--color-on-brand);
+}
+
+.brand:hover {
+  background: var(--color-brand-hover);
+  color: var(--color-on-brand);
+}
+
+.outline {
+  border-color: var(--color-text);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.outline:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
