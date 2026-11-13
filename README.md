@@ -13,6 +13,7 @@ pnpm install
 cp .env.example .env
 pnpm db:up        # PostgreSQL de desenvolvimento
 pnpm db:migrate   # aplica as migrações
+pnpm db:seed      # receitas de exemplo (só em desenvolvimento)
 pnpm dev          # API e front; o endereço do front aparece no terminal
 ```
 

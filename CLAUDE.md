@@ -59,11 +59,12 @@ Pré-requisitos: Node 26 (`.nvmrc`), pnpm 10 (versão fixada em `packageManager`
 - `cp .env.example .env`: cria a configuração local (uma vez; o mesmo `.env` serve ao banco, à API e ao Vite)
 - `pnpm db:up` / `pnpm db:down`: sobe e para o PostgreSQL de desenvolvimento (`docker-compose.dev.yml`)
 - `pnpm db:migrate`: aplica as migrações pendentes no banco de `DATABASE_URL`
-- `pnpm db:generate`: gera uma migração em `apps/api/drizzle/` a partir de `apps/api/src/db/schema.ts`
+- `pnpm db:seed`: grava as receitas de exemplo de `apps/api/src/db/seed/data.ts` no banco de `DATABASE_URL`. Pode rodar de novo sem duplicar; recusa rodar com `NODE_ENV=production` e não entra na imagem. As categorias vêm das migrações, não do seed
+- `pnpm db:generate`: gera uma migração em `apps/api/drizzle/` a partir de `apps/api/src/db/schema.ts` (migração só de dados: `pnpm --filter @livro/api exec drizzle-kit generate --custom --name <nome>`)
 - `pnpm dev`: API (porta `API_PORT`) e front (Vite, encaminhando `/api` para a API) com recarga automática
 - `pnpm lint`: ESLint e checagem do Prettier; `pnpm format` corrige a formatação
 - `pnpm typecheck`: `tsc --noEmit` em todos os pacotes
-- `pnpm test`: Vitest em todos os pacotes
+- `pnpm test`: Vitest em todos os pacotes. Os testes de integração da API precisam do PostgreSQL de pé (`pnpm db:up`): cada arquivo cria um banco temporário no servidor de `DATABASE_URL`, aplica as migrações e apaga no fim
 - `pnpm build`: build de produção da API (`apps/api/dist`) e do front (`apps/web/dist`)
 - `docker build -f apps/api/Dockerfile .` e `docker build -f infra/caddy/Dockerfile .`: imagens de produção (o CI faz isso; o servidor nunca compila)
 - Deploy, secrets, preparação do servidor e rollback: `docs/deploy.md`
